@@ -18,9 +18,9 @@ class User {
 				})
 				return
 			}
-			const {username, password, status = 1} = fields;
+			const {account, password, status = 1} = fields;
 			try{
-				if (!username) {
+				if (!account) {
 					throw new Error('用户名参数错误')
 				}else if(!password){
 					throw new Error('密码参数错误')
@@ -34,19 +34,25 @@ class User {
 				})
 				return
 			}
+			var arr;
+			console.log(req,res)
+			adminModel.login(req,res,account,password,function(err,result) {
+				arr = JSON.parse(result);
+				if(result.length <= 0){
+					res.send({
+						status: 404,
+						data: result,
+						message: '账户名或密码错误',
+					})
+				}else{
+					res.send({
+						status: 200,
+						data: '登录成功',
+						message: '',
+					})
+				}
+			});
 		})
-		console.log(res)
-		var arr;
-        adminModel.showUser(req,res,function(err,result) {
-            arr =JSON.parse(result);
-            res.send({
-				status: 200,
-				data: arr,
-				message: '',
-			})
-        });
-		console.log(req)
-		console.log(next)
 	}
 	async register(req, res, next){
 		const form = new formidable.IncomingForm();
@@ -62,9 +68,9 @@ class User {
 			const {username, password, status = 1} = fields;
 			try{
 				if (!username) {
-					throw new Error('用户名错误')
+					throw new Error('用户名不能为空')
 				}else if(!password){
-					throw new Error('密码错误')
+					throw new Error('密码不能为空')
 				}
 			}catch(err){
 				console.log(err.message, err);
